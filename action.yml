@@ -1,6 +1,6 @@
 name: 'Render Manim Video'
 description: 'Install Manim, render a video from a scene, and upload it as an artifact'
-author: 'Your Name'
+author: 'MengAiDev'
 
 inputs:
   file:
