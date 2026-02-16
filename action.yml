@@ -1,0 +1,71 @@
+name: 'Render Manim Video'
+description: 'Install Manim, render a video from a scene, and upload it as an artifact'
+author: 'MengAiDev'
+
+inputs:
+  file:
+    description: 'Python file containing the scene (relative to repository root)'
+    required: true
+    default: 'scene.py'
+  scene:
+    description: 'Name of the scene class to render'
+    required: true
+    default: 'MyScene'
+  quality:
+    description: 'Rendering quality: -l (low), -m (medium), -h (high), -k (4K)'
+    required: false
+    default: '-m'
+  output_dir:
+    description: 'Output directory (relative to repo root) for final video'
+    required: false
+    default: 'media/videos'
+  python-version:
+    description: 'Python version to use'
+    required: false
+    default: '3.10'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install system dependencies
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          libcairo2-dev \
+          texlive texlive-latex-extra texlive-fonts-extra \
+          texlive-latex-recommended texlive-science \
+          tipa libpango1.0-dev
+
+    - name: Install Manim
+      shell: bash
+      run: pip install manim
+
+    - name: Render video with Manim
+      shell: bash
+      run: |
+        manim ${{ inputs.file }} \
+              ${{ inputs.scene }} \
+              ${{ inputs.quality }} \
+              --output_file=rendered_video \
+              --media_dir=./media
+
+    - name: Upload video artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: manim-video
+        path: ${{ inputs.output_dir }}/**/*.mp4
+        if-no-files-found: error
+        retention-days: 7
+
+branding:
+  icon: 'film'
+  color: 'blue'
