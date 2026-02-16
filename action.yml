@@ -1,6 +1,6 @@
 name: 'Render Manim Video'
 description: 'Install Manim, render a video from a scene, and upload it as an artifact'
-author: 'MengAiDev'
+author: 'Your Name'
 
 inputs:
   file:
@@ -12,9 +12,9 @@ inputs:
     required: true
     default: 'MyScene'
   quality:
-    description: 'Rendering quality: -l (low), -m (medium), -h (high), -k (4K)'
+    description: 'Rendering quality: -ql (low), -qm (medium), -qh (high), -qk (4K)'
     required: false
-    default: '-m'
+    default: '-qm'
   output_dir:
     description: 'Output directory (relative to repo root) for final video'
     required: false
@@ -43,7 +43,8 @@ runs:
           libcairo2-dev \
           texlive texlive-latex-extra texlive-fonts-extra \
           texlive-latex-recommended texlive-science \
-          tipa libpango1.0-dev
+          tipa libpango1.0-dev \
+          ffmpeg
 
     - name: Install Manim
       shell: bash
