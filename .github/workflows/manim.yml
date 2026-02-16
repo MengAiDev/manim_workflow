@@ -16,7 +16,7 @@ on:
       quality:
         description: 'Rendering quality: -l (low), -m (medium), -q (high), -k (4K)'
         required: false
-        default: '-q'
+        default: '-m'
       output_dir:
         description: 'Output directory (relative to repo root) for final video'
         required: false
@@ -35,16 +35,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Cache apt packages
-        uses: awalsh128/cache-apt-packages@v1
-        with:
-          packages: >-
-            libcairo2-dev
-            texlive texlive-latex-extra texlive-fonts-extra
-            texlive-latex-recommended texlive-science
-            tipa libpango1.0-dev
-          version: 1.0
-
+      # System dependencies are installed directly (caching removed for simplicity)
       - name: Install system dependencies
         run: |
           sudo apt update
@@ -72,7 +63,6 @@ jobs:
                 ${{ github.event.inputs.quality || '-m' }} \
                 --output_file=rendered_video \
                 --media_dir=./media
-        # --output_file ensures a predictable filename for artifact upload
 
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
