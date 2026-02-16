@@ -1,6 +1,6 @@
 # Manim Video Renderer Action
 
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Manim%20Video%20Renderer-blue.svg?logo=github)](https://github.com/marketplace/actions/manim-video-renderer)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-Manim%20Video%20Renderer-blue.svg?logo=github)](https://github.com/marketplace/actions/render-manim-video)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A GitHub Action that automatically installs [Manim](https://www.manim.community/) (Mathematical Animation Engine), renders a video from your scene, and uploads it as a downloadable artifact. Perfect for automating animation renders in your CI/CD pipeline.
