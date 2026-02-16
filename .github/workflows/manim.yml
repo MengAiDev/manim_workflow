@@ -1,0 +1,83 @@
+name: Render Manim Video
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      file:
+        description: 'Python file containing the scene (relative to repo root)'
+        required: true
+        default: 'scene.py'
+      scene:
+        description: 'Name of the scene class to render'
+        required: true
+        default: 'MyScene'
+      quality:
+        description: 'Rendering quality: -l (low), -m (medium), -q (high), -k (4K)'
+        required: false
+        default: '-q'
+      output_dir:
+        description: 'Output directory (relative to repo root) for final video'
+        required: false
+        default: 'media/videos'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cache apt packages
+        uses: awalsh128/cache-apt-packages@v1
+        with:
+          packages: >-
+            libcairo2-dev
+            texlive texlive-latex-extra texlive-fonts-extra
+            texlive-latex-recommended texlive-science
+            tipa libpango1.0-dev
+          version: 1.0
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            libcairo2-dev \
+            texlive texlive-latex-extra texlive-fonts-extra \
+            texlive-latex-recommended texlive-science \
+            tipa libpango1.0-dev
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-manim-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-manim-
+
+      - name: Install Manim
+        run: pip install manim
+
+      - name: Render video with Manim
+        run: |
+          manim ${{ github.event.inputs.file || 'scene.py' }} \
+                ${{ github.event.inputs.scene || 'MyScene' }} \
+                ${{ github.event.inputs.quality || '-m' }} \
+                --output_file=rendered_video \
+                --media_dir=./media
+        # --output_file ensures a predictable filename for artifact upload
+
+      - name: Upload video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: manim-video
+          path: media/videos/**/*.mp4
+          if-no-files-found: error
+          retention-days: 7
